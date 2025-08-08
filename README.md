@@ -37,7 +37,11 @@
 
 
 ### 1. Clone the Repository
-
+<img width="1050" height="749" alt="Screenshot 2025-08-08 223841" src="https://github.com/user-attachments/assets/46276350-0d80-42cf-b871-0ebce7b23657" />
+<img width="951" height="480" alt="Screenshot 2025-08-08 223903" src="https://github.com/user-attachments/assets/5b682ead-0857-4fdb-a3b4-c1dd19c7da32" />
+<img width="971" height="549" alt="Screenshot 2025-08-08 223854" src="https://github.com/user-attachments/assets/63221961-9c65-41c3-84cc-cf85974f7fb8" />
+<img width="951" height="480" alt="Screenshot 2025-08-08 223903" src="https://github.com/user-attachments/assets/a63764b2-f8ef-42d8-bd3d-ee39b3606ea9" />
 ```bash
 git clone https://github.com/SonaBinu22/eJusticeBot.git
 cd eJusticeBot
+
