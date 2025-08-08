@@ -2,40 +2,42 @@
 
 **eJusticeBot** is an AI-powered legal chatbot designed to help Indian citizens access legal guidance in simple language. It provides step-by-step answers to questions related to legal rights, filing FIRs, consumer complaints, cyber laws, and more.
 
+![eJusticeBot Preview](https://github.com/user-attachments/assets/76f87f39-f6b3-41d0-a19b-ad9b2cefa7d7)
+
+---
+
 ## 🌐 Key Features
 
-- 💬 Chatbot interface using Streamlit
-- 🧠 NLP-based intent recognition
-- 📚 Covers topics like:
-  - Fundamental Rights
+- 💬 Interactive chatbot interface using **Streamlit**
+- 🧠 NLP-powered intent recognition (via `NLTK`)
+- 📚 Covers essential legal topics:
+  - Know Your Rights
   - Filing FIRs
   - RTI Process
-  - Accident Procedure
-  - Cybercrime
-  - Women’s & Child Rights
-  - Property Law
-  - Consumer Protection
-  - IPC Laws
-- 📄 Easy-to-update dataset in `intents.json`
+  - Road Accident Procedure
+  - Cybercrime Reporting
+  - Women & Child Rights
+  - Property Law Basics
+  - Consumer Protection Act
+  - Important IPC Sections
+- 🛠 Easily customizable via `intents.json`
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Python 3.10+**
-- **NLTK** – for natural language processing
-- **Streamlit** – for chatbot interface
+| Layer         | Technology     |
+|---------------|----------------|
+| Language      | Python 3.10+    |
+| NLP Engine    | NLTK           |
+| UI Framework  | Streamlit      |
+| Dataset       | intents.json   |
 
 ---
 
-## 📦 Installation
 
 ### 1. Clone the Repository
 
-git clone https://github.com/yourusername/eJusticeBot.git
+```bash
+git clone https://github.com/SonaBinu22/eJusticeBot.git
 cd eJusticeBot
-
----
-
-https://github.com/user-attachments/assets/76f87f39-f6b3-41d0-a19b-ad9b2cefa7d7
-
