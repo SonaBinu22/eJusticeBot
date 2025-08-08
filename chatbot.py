@@ -1,55 +1,43 @@
 import json
 import random
 import nltk
-import numpy as np
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.naive_bayes import MultinomialNB
-import pickle
+import string
 
-nltk.download('punkt')
+# Safe download of punkt
+try:
+    nltk.data.find('tokenizers/punkt')
+except LookupError:
+    nltk.download('punkt')
 
-with open('intents.json') as file:
+from nltk.tokenize import word_tokenize
+
+# Load intents
+with open("intents.json", "r", encoding="utf-8") as file:
     data = json.load(file)
 
-# Prepare training data
-corpus = []
-tags = []
-for intent in data['intents']:
-    for pattern in intent['patterns']:
-        corpus.append(pattern)
-        tags.append(intent['tag'])
+def preprocess(text):
+    # Lowercase, remove punctuation, tokenize
+    text = text.lower()
+    text = text.translate(str.maketrans("", "", string.punctuation))
+    tokens = word_tokenize(text)
+    return tokens
 
-vectorizer = CountVectorizer()
-X = vectorizer.fit_transform(corpus)
-y = np.array(tags)
-
-# Train model
-model = MultinomialNB()
-model.fit(X, y)
-
-# Save model and vectorizer
-with open('model.pkl', 'wb') as f:
-    pickle.dump(model, f)
-
-with open('vectorizer.pkl', 'wb') as f:
-    pickle.dump(vectorizer, f)
-
-# Response function
 def get_response(user_input):
-    with open('intents.json') as file:
-        data = json.load(file)
+    tokens = preprocess(user_input)
+    best_match = None
+    max_overlap = 0
 
-    with open('model.pkl', 'rb') as f:
-        model = pickle.load(f)
+    for intent in data["intents"]:
+        for pattern in intent["patterns"]:
+            pattern_tokens = preprocess(pattern)
+            overlap = len(set(tokens) & set(pattern_tokens))
+            if overlap > max_overlap:
+                max_overlap = overlap
+                best_match = intent
 
-    with open('vectorizer.pkl', 'rb') as f:
-        vectorizer = pickle.load(f)
+    if best_match and max_overlap > 0:
+        response = random.choice(best_match["responses"])
+        return response
+    else:
+        return "I'm sorry, I couldn't understand that. Could you please rephrase your question?"
 
-    X = vectorizer.transform([user_input])
-    tag = model.predict(X)[0]
-
-    for intent in data['intents']:
-        if intent['tag'] == tag:
-            return "\n".join(intent['responses'])
-
-    return "Sorry, I didn’t understand. Please rephrase your question."
