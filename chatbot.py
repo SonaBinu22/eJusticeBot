@@ -1,51 +1,27 @@
-import random
 import json
-import nltk
-import os
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.naive_bayes import MultinomialNB
-from nltk.stem import WordNetLemmatizer
+import random
+import re
 
-# Download necessary NLTK data
-nltk.download('punkt')
-nltk.download('wordnet')
-
-# Load intents JSON
+# Load intents
 with open("intents.json", "r", encoding="utf-8") as file:
-    data = json.load(file)
+    intents = json.load(file)
 
-# NLP preprocessing
-lemmatizer = WordNetLemmatizer()
-corpus = []
-labels = []
-responses = {}
+# Clean and tokenize text
+def clean_text(text):
+    text = text.lower()
+    text = re.sub(r'[^a-z0-9\s]', '', text)
+    return text.split()
 
-for intent in data["intents"]:
-    for pattern in intent["patterns"]:
-        tokens = nltk.word_tokenize(pattern)
-        tokens = [lemmatizer.lemmatize(w.lower()) for w in tokens]
-        corpus.append(" ".join(tokens))
-        labels.append(intent["tag"])
-
-    responses[intent["tag"]] = intent["responses"]
-
-# Vectorize
-vectorizer = CountVectorizer()
-X = vectorizer.fit_transform(corpus)
-
-# Train model
-model = MultinomialNB()
-model.fit(X, labels)
-
-# Response function
+# Main function to get response
 def get_response(user_input):
-    tokens = nltk.word_tokenize(user_input)
-    tokens = [lemmatizer.lemmatize(w.lower()) for w in tokens]
-    X_test = vectorizer.transform([" ".join(tokens)])
-    tag = model.predict(X_test)[0]
+    user_words = clean_text(user_input)
 
-    if tag in responses:
-        return random.choice(responses[tag])
-    else:
-        return "Sorry, I didn't understand that. Could you rephrase?"
+    for intent in intents["intents"]:
+        for pattern in intent["patterns"]:
+            pattern_words = clean_text(pattern)
+            if set(user_words).intersection(set(pattern_words)):
+                return random.choice(intent["responses"])
 
+    return "Sorry, I do not understand. Please rephrase your question."
+
+__all__ = ['get_response']
