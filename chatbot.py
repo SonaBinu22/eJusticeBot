@@ -1,43 +1,51 @@
-import json
 import random
+import json
 import nltk
-import string
+import os
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from nltk.stem import WordNetLemmatizer
 
-# Safe download of punkt
-try:
-    nltk.data.find('tokenizers/punkt')
-except LookupError:
-    nltk.download('punkt')
+# Download necessary NLTK data
+nltk.download('punkt')
+nltk.download('wordnet')
 
-from nltk.tokenize import word_tokenize
-
-# Load intents
+# Load intents JSON
 with open("intents.json", "r", encoding="utf-8") as file:
     data = json.load(file)
 
-def preprocess(text):
-    # Lowercase, remove punctuation, tokenize
-    text = text.lower()
-    text = text.translate(str.maketrans("", "", string.punctuation))
-    tokens = word_tokenize(text)
-    return tokens
+# NLP preprocessing
+lemmatizer = WordNetLemmatizer()
+corpus = []
+labels = []
+responses = {}
 
+for intent in data["intents"]:
+    for pattern in intent["patterns"]:
+        tokens = nltk.word_tokenize(pattern)
+        tokens = [lemmatizer.lemmatize(w.lower()) for w in tokens]
+        corpus.append(" ".join(tokens))
+        labels.append(intent["tag"])
+
+    responses[intent["tag"]] = intent["responses"]
+
+# Vectorize
+vectorizer = CountVectorizer()
+X = vectorizer.fit_transform(corpus)
+
+# Train model
+model = MultinomialNB()
+model.fit(X, labels)
+
+# Response function
 def get_response(user_input):
-    tokens = preprocess(user_input)
-    best_match = None
-    max_overlap = 0
+    tokens = nltk.word_tokenize(user_input)
+    tokens = [lemmatizer.lemmatize(w.lower()) for w in tokens]
+    X_test = vectorizer.transform([" ".join(tokens)])
+    tag = model.predict(X_test)[0]
 
-    for intent in data["intents"]:
-        for pattern in intent["patterns"]:
-            pattern_tokens = preprocess(pattern)
-            overlap = len(set(tokens) & set(pattern_tokens))
-            if overlap > max_overlap:
-                max_overlap = overlap
-                best_match = intent
-
-    if best_match and max_overlap > 0:
-        response = random.choice(best_match["responses"])
-        return response
+    if tag in responses:
+        return random.choice(responses[tag])
     else:
-        return "I'm sorry, I couldn't understand that. Could you please rephrase your question?"
+        return "Sorry, I didn't understand that. Could you rephrase?"
 
